@@ -1,0 +1,55 @@
+// This is Dijkstra's pseudocode.
+function dijkkstra([] nodearray, Node startnode):
+    
+    // Set up up the required arrays
+    
+    distance <- (array) // The distance of each array
+    path <- (array) // The path required to get to each node
+    
+    // NOTE: path can also be used to track which nodes have already been 
+    //       visited and fulfills our need for a visited node.
+
+    node = startnode // This is the node we manipulate in the while loop
+                     // and we begin with startnode
+
+    while(!nodearray.isEmpty()):
+
+        // The first thing to do with startnode is to get and store its
+        // neighbours.
+
+        neighbours = startnode.getNeighours() // An array of startNode's neighbours
+    
+        // Now that we have the neighbours, we can travel to each of the neighbouring
+        // nodes and see which one has the smaller weight
+    
+        ultraweight = 0
+        nextNode = node
+        index = 0
+        for x in neighbours:
+            index <- index of x (value)
+            if(index != 0):
+                weight = x.getWeight()
+                    if(weight <  ultraweight) and (x is in nodearray):
+                    ultraweight = weight
+                    nextNode = x
+            else:
+                ultraweight = x.getWeight()
+        
+        distance[index] = weight
+
+        // now we get node into the path and out of nodearray
+
+        for x in nodearray:
+            if x == node:
+                nodearray.remove(x)
+                path.append(x)
+
+        // We then update startnode to be the nextNode
+        node = nextNode
+
+    
+
+
+
+
+
