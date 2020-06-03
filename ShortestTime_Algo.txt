@@ -1,0 +1,21 @@
+// This is the function used to find how long it will take to find the shortest path
+
+def shortestTime(int meansOfTransport, [] nodeList, node startNode):
+    // We need to determine if the meansOfTransport was by walk, bike or 
+    // bus. To do this we use switch statements:
+
+    // If it is by walk, we use the avg walk speed to calculate how long it will 
+    // take and divide it by the distance.
+    
+    // NOTE: I can see this app using machine learning to record the users walk 
+    // time at the end, so that it can predict and change the users estimated time.
+
+    // If it is by bike, we must divide the distance by the average speed of a bike.
+
+    // If it is by car we divide by the average car speed around here, 25 m/h.
+
+    // we return the value.
+
+
+
+    
