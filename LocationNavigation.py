@@ -1,9 +1,8 @@
-# This is the class that is used to create functionality and add functionality to the 
-# Application class. It controls how the functionality of the application works.
 import sys
 from LocationNode import LocationNode
 from Graph import Graph
-
+# This is the class that is used to create functionality and add functionality to the 
+# Application class. It controls how the functionality of the application works.
 class LocationNavigation(object):
     # GLOBAL VARIABLES
     index = 0
@@ -52,15 +51,16 @@ class LocationNavigation(object):
     # This method uses Dijkstra's Algorithm to find the shortest path between 
     # two nodes and returns an array of the locations to be used between the 
     # two nodes to return the shortest possible path.
+    # -----------------------------------------------------------------------
     # PARAMS: nodeList(array): The list of selected nodes.
     #         startNode(LocationNode): The node from which we  
     # RETURN: A list containing the shortest path of nodes to the end path
     def findShortestPath(self, nodeList, startNode):
         # Set the distance and path arrays.
-        distance = [99 for d in range(len(LocationNavigation.locations))]
+        self.distance = [99 for d in range(len(LocationNavigation.locations))]
         path = []
         # Set the startNode distance in the array to be 0 
-        distance[startNode.getValue()] = 0
+        self.distance[startNode.getValue()] = 0
         # NOTE: path can also be used to track which nodes have already been 
         #  visited and fulfills our need for a visited node.
        
@@ -88,7 +88,7 @@ class LocationNavigation(object):
                 else:
                     ultraweight = x.getWeight()
             
-            distance[index] = weight
+            self.distance[index] = weight
             # Now we get node into the path and out of nodeArray
 
             for x in nodeList:
@@ -101,10 +101,33 @@ class LocationNavigation(object):
         
         return path
 
-
-
-
-
-        
-
+    # This is the shortest path time that can be calculated and the means of the 
+    # transport and the way that the user should travel for the most efficient 
+    # ETA.
+    # ___________________________________________________________________________
+    # PARAMS: 
+    # meansOfTransport(int): A value that indicates whether the user will be traveling by bus or car.
+    # nodeList(list): The list of nodes to be used in findShortestPath to calculate distance
+    # startNode(Node): The starting node of the list.              
+    # RETURN : An integer value containing the time taken
+    def shortestPathTime(self, meansOfTransport, nodeList, startNode):
+        distance = 0 # The distance required to be travelled
+        timeTaken = 0 # The total time taken
+        # Calculating the distance.
+        self.findShortestPath(nodeList,startNode)
+        for x in self.distance:
+            distance = distance + x
+        if(meansOfTransport == 0):
+            # This calculates the time it would take by walk. The average walking speed is
+            # 3 - 4 miles per hour.
+            timeTaken = distance/4
+        if(meansOfTransport == 1):
+            # This calculates the time it would take by bike. The average biking speed is
+            # 3 - 4 miles per hour.
+            timeTaken = distance/9
+        if(meansOfTransport == 2):
+            # This calculates the time it would take by car. The average car speed is
+            # 25 miles per hour.
+            timeTaken = distance/25
+        return timeTaken
     
