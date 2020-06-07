@@ -9,9 +9,9 @@ class LocationNode(object):
     # value(int): this is the unique identifier of each location.
     def __init__(self, name, value):
         self.name = name
-        self.neighbours = []
-        self.value = value + 1
-        self.weights = []
+        self.neighbours = [-1 for d in range(50)]
+        self.value = value
+        self.weights = [-1 for d in range(50)]
 
     # This gets the name of the Node
     # ------------------------------
@@ -40,7 +40,7 @@ class LocationNode(object):
     # ------------------------------
     # Returns a weight from an (Array) weights
     def getWeight(self, index):
-        return self.weights[index - 1]
+        return self.weights[index]
 
     # This adds Nodes to the neighbours
     # ------------------------------
@@ -48,15 +48,14 @@ class LocationNode(object):
     # NOTE: An ideal way for this to work would be to append node to self's neighbours
     # and to append self to node's neighbours as well.
     def addNeighbour(self, node):
-        self.neighbours.append(node)
-        node.neighbours.append(self)     
+        index = node.getValue()
+        self.neighbours[index] = node
+        node.neighbours[self.getValue()] = self    
  
     # This sets the weight of the Node
     def addWeight(self, weight, node2):
-        index = node2.getValue()
-        index2 = self.getValue()
-        self.weights[index - 1] = weight
-        node2.weights[index2 -1] = weight
+            self.weights[node2.getValue()] = weight
+            node2.weights[self.getValue()] = weight
 
     # Removes a neighbour
     def removeNeighb(self, node):
@@ -64,9 +63,14 @@ class LocationNode(object):
           
     # This sets the neighbours
     def setNeighbours(self, neighbours):
-        self.neighbours = neighbours
+        #self.neighbours = neighbours
         for x in neighbours:
-            x.neighbours.append(self)
+            if x != -1:
+                x.neighbours[neighbours.index(x)] = (self)
+                self.neighbours[neighbours.index(x)] = (x)
+            else:
+                self.neighbours.append(x)
+        
 
     # This sets the name of the Node     
     def setName(self, name):
@@ -74,12 +78,10 @@ class LocationNode(object):
    
     # This sets the weights of the node    
     def setWeights(self, weights):
-        self.weights = weights
-
-    
-        
-
-
-    
-
-    
+        for x in weights:
+            if(x != -1):
+                index = weights.index(x)
+                self.addWeight(x, self.neighbours[index])
+            else: 
+                self.weights.append(x)
+            
