@@ -6,6 +6,7 @@ import sys
 
 # This is the main application for the Main Dialog of the Project.
 class Application(QtWidgets.QDialog): 
+#class Application(QtGui.QGuiApplication):
     def __init__(self, parent=None):
         super(Application, self).__init__(parent)
         # Setting up the Window
@@ -14,6 +15,7 @@ class Application(QtWidgets.QDialog):
         #Setting up the window icon
         iconpixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/icon.png')
         self.setWindowIcon(QtGui.QIcon(iconpixmap))
+        self.locationButtons = []
         
         # insert the image
         self.pixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/map.jpg')
@@ -31,6 +33,11 @@ class Application(QtWidgets.QDialog):
         # Adding the layouts to the groups
         layout2.addWidget(self.LeftWidgets())
         layout2.addWidget(horGroupBox)
+
+        # Adding functionality to the buttons
+        self.button1.clicked.connect(self.shortestTimeDialogue)
+        self.button2.clicked.connect(self.shortestPath)
+
         self.addbutton.clicked.connect(self.AddDialogueBox)
         self.rembutton.clicked.connect(self.RemoveDialogueBox)
         # adding layouts to self
@@ -67,13 +74,11 @@ class Application(QtWidgets.QDialog):
         #self.location1 = QtWidgets.QRadioButton("Location 1") # RadioButton1
         #self.location2 = QtWidgets.QRadioButton("Location 2") # RadioButton2
         self.buttonBox = QtWidgets.QDialogButtonBox() 
-       
+        
         #Adding Buttons to ButtonBox
         self.buttonBox.addButton(self.button1, QtWidgets.QDialogButtonBox.ActionRole) # Adding Button1 to ButtonBox
         self.buttonBox.addButton(self.button2, QtWidgets.QDialogButtonBox.ActionRole) # Adding Button2 to ButtonBox
- 
-        # Adding functionality to the buttons
-        self.button1.clicked.connect(self.shortestTimeDialogue)
+
         # Adding Widgets to layouts
         #self.innerlay.addWidget(self.location1) # Adding RadioButton1 to innerlayout
         #self.innerlay.addWidget(self.location2) # Adding RadioButton2 to innerlayout
@@ -85,15 +90,14 @@ class Application(QtWidgets.QDialog):
         layout1.setLayout(self.innerlay)
         
         return layout1
-
     
     # This is the dialogue box that I want to be able to use to add a new Location and to 
     # add a Location to the Location bar.
     def AddDialogueBox(self):
-        dialogbox = QtWidgets.QDialog()
-        dialogbox.setModal(True)
-        dialogbox.resize(300,150)
-        dialogbox.setWindowTitle("Add Location")
+        self.dialogbox = QtWidgets.QDialog()
+        self.dialogbox.setModal(True)
+        self.dialogbox.resize(300,150)
+        self.dialogbox.setWindowTitle("Add Location")
 
         self.namelabel = QtWidgets.QLabel("Name") # Name Label
         self.neighbourLabel = QtWidgets.QLabel("Neighbour") # Neighbour Label
@@ -129,15 +133,15 @@ class Application(QtWidgets.QDialog):
         groupbox.setLayout(vboxlay)
         hbox.addWidget(groupbox)
         # Then set the layout to the groupbox
-        dialogbox.setLayout(hbox)
-        dialogbox.exec()
+        self.dialogbox.setLayout(hbox)
+        self.dialogbox.exec_()
     
     # This is the dialogue box used to remove values from the Program
     def RemoveDialogueBox(self):
-        dialogbox = QtWidgets.QDialog()
-        dialogbox.setModal(True)
-        dialogbox.resize(200,150)
-        dialogbox.setWindowTitle("Remove Location")
+        self.remdialogbox = QtWidgets.QDialog()
+        self.remdialogbox.setModal(True)
+        self.remdialogbox.resize(200,150)
+        self.remdialogbox.setWindowTitle("Remove Location")
 
         self.toplabel = QtWidgets.QLabel("Select Location to Remove: ")
         self.vboxlay = QtWidgets.QVBoxLayout() # The VBox within the layout VBox
@@ -151,24 +155,41 @@ class Application(QtWidgets.QDialog):
             self.remneighbbut = QtWidgets.QRadioButton(neighbName)
             self.remchecklist.append(self.remneighbbut)
             self.vboxlay.addWidget(self.remneighbbut)
-        print(self.remchecklist)
         self.vboxlay.addWidget(self.OkBox)    
         self.OkBox.button(QtWidgets.QDialogButtonBox.Ok).clicked.connect(self.remove)
-        dialogbox.setLayout(self.vboxlay)
-        dialogbox.exec()
+        self.remdialogbox.setLayout(self.vboxlay)
+        self.remdialogbox.exec()
+    
+    # This is the method that we must use to set up the mouse cursor for when we 
+    # move onto the map.
+    def setmouseTracker(self):
+        mousepixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon.png')
+        cursor = QtGui.QCursor(mousepixmap)
+        try:
+            QtWidgets.QApplication.setOverrideCursor(cursor)
+            yield
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
     
     # This is the dialogue box for the shortest time dialogue box
     def shortestTimeDialogue(self):
-        dialogbox = QtWidgets.QDialog() # The dialogbox for the shortest time.
-        dialogbox.setModal(True)
-        dialogbox.resize(300,150)
-        dialogbox.setWindowTitle("Shortest Time")
+        self.stdialogbox = QtWidgets.QDialog() # The dialogbox for the shortest time.
+        self.stdialogbox.setModal(True)
+        self.stdialogbox.resize(300,150)
+        self.stdialogbox.setWindowTitle("Shortest Time")
+        self.transport = [] # The transport array of the buttons
 
         vbox = QtWidgets.QVBoxLayout() # The vboxlayout
         walkRad = QtWidgets.QRadioButton("Time by Walk") # The walk button
         bikeRad = QtWidgets.QRadioButton("Time by Bike") # The bike button
         busRad = QtWidgets.QRadioButton("Time by Bus") # The bus button
         buttonOkBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok) # The OK button
+        self.transport.append(walkRad)
+        self.transport.append(bikeRad)
+        self.transport.append(busRad)
+
+        # Upon selecting the Ok button, we are connected to the shortestTime method
+        buttonOkBox.button(QtWidgets.QDialogButtonBox.Ok).clicked.connect(self.shortestTime)
 
         #Add the required widgets
         vbox.addWidget(walkRad)
@@ -177,8 +198,8 @@ class Application(QtWidgets.QDialog):
         vbox.addWidget(buttonOkBox)
 
         # Set the layout
-        dialogbox.setLayout(vbox)
-        dialogbox.exec()
+        self.stdialogbox.setLayout(vbox)
+        self.stdialogbox.exec()
         
     
     # This is the def that is used when the 'Ok' Button is clicked.
@@ -206,8 +227,14 @@ class Application(QtWidgets.QDialog):
                
         node1 = LocationNavigation.addLocation(self,self.name.text(), neighbarr, weightarr)
         self.location = QtWidgets.QCheckBox(node1.getName())
+        self.locationButtons.append(self.location)
         self.vlay.addWidget(self.location, QtWidgets.QDialogButtonBox.ActionRole) # Adding location to ButtonBox
+        self.textBox.append(str(node1.getName()) + " added!")
+        self.dialogbox.close()
     
+    # This is the method that is executed when an item is removed
+    # ------------------------------------------------------------
+    # NO PARAMS, NO RETURN 
     def remove(self):
         checkIndex = 0
         # This is the method used to remove
@@ -227,15 +254,75 @@ class Application(QtWidgets.QDialog):
 
         self.remchecklist.remove(self.remchecklist[checkIndex])
         node = LocationNavigation.locations[checkIndex]
+        self.locationButtons.remove(self.locationButtons[checkIndex])
         LocationNavigation.removeLocation(self, node)
+        self.textBox.append(str(node.getName()) + " removed!")
+        self.remdialogbox.close()
 
+    # This is a helper method that is used to find the selected locations
+    # ------------------------------------------------------------------
+    # NO PARAMS
+    # RETURN: An array of selected nodes.
+    def __getLocations__(self):
+        nameArray = []
+        nodeArray = []
+        # First we iterate through the selected nodes and get their names.
+        if (len(self.locationButtons) > 0):
+            for x in self.locationButtons:
+                if x.isChecked():
+                    nameArray.append(x.text())
+        # Then we get the iterate through the list of names and get those nodes
+        # that match the names.
+        if(len(LocationNavigation.locations) > 0):
+            for x in LocationNavigation.locations:
+                for y in nameArray:
+                    if x.getName() == y:
+                        nodeArray.append(x)
+        return nodeArray
+   
+    # This is the shortest path that is used to display the shortestPath 
+    # after being connected to the Dijkstra's algorithm in the LocationNavigation
+    # Class.
+    #  --------------------------------------------------------------------------
+    # NO PARAMS, NO RETURNS
+    def shortestPath(self):
+        nodeArray = []
+        nodeArray = self.__getLocations__()
+       
+        # Then we call findShortestPath from the LocationNavigation class, and make 
+        # sure that we initiate the startNode as being the node with the lowest index.
+          
+        startNode = nodeArray[0]
+        finalPath = LocationNavigation.findShortestPath(self, nodeArray, startNode)
+        
+        self.textBox.append("The shortest possible path is: ")
+        for x in finalPath:
+            if finalPath.index(x) == (len(finalPath) - 1):
+                self.textBox.append(str(x.getName()))
+            else:
+                self.textBox.append(str(x.getName()) + ",")  
+    # This is used to find the shortest time of the list after being 
+    # connected to the shortestTime method in locationNavigation.
+    # --------------------------------------------------------------
+    # NO PARAMS, NO RETURNS
+    def shortestTime(self):
+        # First we must determine the method of transport
+        index = -1
+        for x in self.transport:
+            if x.isChecked():
+                index = self.transport.index(x)
+        # Then we get the array of selected nodes
+        nodeArray = []
+        nodeArray = self.__getLocations__()
+        # Finally we use these to call the shortestTime method in location
+        # navigation
+        timeTaken = LocationNavigation.shortestPathTime(self, index, nodeArray,nodeArray[0])
+        self.textBox.append("The shortest possible time is: " + str(timeTaken) + " minutes.")
+        self.stdialogbox.close()
 if __name__ == '__main__':     
     # Create the Qt Application
     app = QtWidgets.QApplication([])
     applic = Application()
-    applic.exec()
+    applic.exec_()
     # Run the main Qt loop
     sys.exit(app.exec_())
-
-
-
