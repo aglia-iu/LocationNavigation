@@ -160,17 +160,6 @@ class Application(QtWidgets.QDialog):
         self.remdialogbox.setLayout(self.vboxlay)
         self.remdialogbox.exec()
     
-    # This is the method that we must use to set up the mouse cursor for when we 
-    # move onto the map.
-    def setmouseTracker(self):
-        mousepixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon.png')
-        cursor = QtGui.QCursor(mousepixmap)
-        try:
-            QtWidgets.QApplication.setOverrideCursor(cursor)
-            yield
-        finally:
-            QtWidgets.QApplication.restoreOverrideCursor()
-    
     # This is the dialogue box for the shortest time dialogue box
     def shortestTimeDialogue(self):
         self.stdialogbox = QtWidgets.QDialog() # The dialogbox for the shortest time.
