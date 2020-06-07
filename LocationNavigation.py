@@ -19,17 +19,15 @@ class LocationNavigation(object):
     # RETURNS: the created node
     #
     def addLocation(self, name, neighbours, weights):
-        LocationNavigation.index+=1 # increment the index by one
         node = LocationNode(name, LocationNavigation.index) # Add the node
         # Set the nodes Neighbours and Weights
         node.setNeighbours(neighbours)
         node.setWeights(weights)
         # Add the node to the locations graph.
         LocationNavigation.locations.append(node)
-        for x in LocationNavigation.locations:
-            print(x.getName() + ", ")
+        LocationNavigation.index+=1 # increment the index by one
         return node
-    
+   
     # This method is used to remove a location. Before removing the location we must remove this 
     # from each of it's neighbouring nodes' neighbour arrays. After removing each of the neighbouring 
     # arrays, we can remove the LocationNode. To remove this node, we can use either the node itself 
@@ -46,7 +44,6 @@ class LocationNavigation(object):
                 x.removeNeighb(node)
         
         LocationNavigation.locations.remove(node)
-        #LocationNavigation.graph.removeVertex(node)
     
     # This method uses Dijkstra's Algorithm to find the shortest path between 
     # two nodes and returns an array of the locations to be used between the 
@@ -56,39 +53,50 @@ class LocationNavigation(object):
     #         startNode(LocationNode): The node from which we  
     # RETURN: A list containing the shortest path of nodes to the end path
     def findShortestPath(self, nodeList, startNode):
-        # Set the distance and path arrays.
-        self.distance = [99 for d in range(len(LocationNavigation.locations))]
+        self.distance = [0 for d in range(len(LocationNavigation.locations))]
         path = []
         # Set the startNode distance in the array to be 0 
-        self.distance[startNode.getValue()] = 0
+        #self.distance[startNode.getValue()] = 0
+        
         # NOTE: path can also be used to track which nodes have already been 
         #  visited and fulfills our need for a visited node.
        
         node = startNode # This is the node we manipulate in the while loop and we begin with the startNode
 
+        # Now that we have the neighbours, we can travel to each of the neighbouring
+        # nodes and see which one has the smaller weight.
+        ultraweight = 0
+        nextNode = node
+        index = 0
+            
         # We then start the while loop:
         while (len(nodeList) != 0):
             # The first thing to do with startnode is to get and store its
             # neighbours.
             neighbours = node.getNeighbours() # An array of startNode's neighbours
            
-            # Now that we have the neighbours, we can travel to each of the neighbouring
-            # nodes and see which one has the smaller weight.
-            ultraweight = 0
-            nextNode = node
-            index = 0
-            
-            for x in neighbours:
-                index = x.getValue()
-                if(index != 0):
-                    weight = x.getWeight()
-                    if(weight <  ultraweight) and (x in nodeList):
-                        ultraweight = weight
-                        nextNode = x
+            if(len(neighbours) > 0):
+                if(len(neighbours) == 1):
+                    ultraweight = neighbours[0].getWeight(0)
                 else:
-                    ultraweight = x.getWeight()
-            
-            self.distance[index] = weight
+                    for y in neighbours:
+                        if(y != -1):
+                            if (y in nodeList):
+                                index = neighbours.index(y)  
+                                ultraweight = neighbours[index].getWeight(index)
+                            elif(len(nodeList) == 1):
+                                index = neighbours.index(y)  
+                                ultraweight = neighbours[index].getWeight(index + 1)
+                for x in neighbours:
+                    if(x != -1):
+                        index = neighbours.index(x)
+                        if(index >= 0):
+                            weight = x.getWeight(index)
+                            # and (x in nodeList)
+                            if((int(weight) <= int(ultraweight))and (int( weight ) > -1)):
+                                ultraweight = weight
+                                nextNode = x         
+            self.distance[index] = ultraweight
             # Now we get node into the path and out of nodeArray
 
             for x in nodeList:
