@@ -20,7 +20,7 @@ function __bfs__(self, startNode, endNode):
         
         //If it is the last node we want
         if(node == endNode):
-            return node
+            return queue
         
         // Get the neighbours of the node
         neighbours = node.getNeighbours()
