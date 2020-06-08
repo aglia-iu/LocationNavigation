@@ -50,8 +50,8 @@ class Application(QtWidgets.QDialog):
         self.boxButton = QtWidgets.QDialogButtonBox() # Adds the buttons to this box
         self.addbutton = QtWidgets.QPushButton("Add Location") # Add location button
         self.rembutton = QtWidgets.QPushButton("Remove Location") # Remove location button
-        self.textBox = QtWidgets.QTextEdit("Welcome To Location Navigation!\n \n") # TextBox for commands        textBox.setReadOnly(True) # This makes the textBox Read-Only
-        self.textBox.setReadOnly(True)
+        self.textBox = QtWidgets.QTextEdit("Welcome To Location Navigation!\n \n") # TextBox for commands    
+        self.textBox.setReadOnly(True) # This makes the textBox Read-Only
         # Add buttons to boxButton
         self.boxButton.addButton(self.addbutton, QtWidgets.QDialogButtonBox.ActionRole)
         self.boxButton.addButton(self.rembutton, QtWidgets.QDialogButtonBox.ActionRole)
@@ -71,8 +71,6 @@ class Application(QtWidgets.QDialog):
         self.vlay = QtWidgets.QVBoxLayout() # The VBox within the layout
         groupbox = QtWidgets.QGroupBox("Neighbours") 
         layout1 = QtWidgets.QGroupBox() # main groupBox
-        #self.location1 = QtWidgets.QRadioButton("Location 1") # RadioButton1
-        #self.location2 = QtWidgets.QRadioButton("Location 2") # RadioButton2
         self.buttonBox = QtWidgets.QDialogButtonBox() 
         
         #Adding Buttons to ButtonBox
@@ -126,8 +124,7 @@ class Application(QtWidgets.QDialog):
             vboxlay.addWidget(self.weightLabel)
             vboxlay.addWidget(self.weight)
 
-        # Add the Widgets to vboxlay, then to groupbox   
-        
+        # Add the Widgets to vboxlay, then to groupbox  
         vboxlay.addWidget(self.buttonOkBox)
         self.buttonOkBox.button(QtWidgets.QDialogButtonBox.Ok).clicked.connect(self.accept)
         groupbox.setLayout(vboxlay)
@@ -232,15 +229,16 @@ class Application(QtWidgets.QDialog):
                 if x.isChecked():
                     checkIndex = self.remchecklist.index(x)    
         else:
-            return None   
+            return None  
         
-        #TODO: Fix the issue with it deleting multiple values at a time
+        # Remove the button from the widget and vlay, also set the Parent to zero to erase button completely.
         b = self.vlay.takeAt(checkIndex)
         self.widget = self.remchecklist[checkIndex]
         self.vlay.removeWidget(self.widget)
         w = b.widget()
         w.setParent(None)
-
+        
+        # Remove the button and node from all associated materials.
         self.remchecklist.remove(self.remchecklist[checkIndex])
         node = LocationNavigation.locations[checkIndex]
         self.locationButtons.remove(self.locationButtons[checkIndex])
@@ -308,6 +306,8 @@ class Application(QtWidgets.QDialog):
         timeTaken = LocationNavigation.shortestPathTime(self, index, nodeArray,nodeArray[0])
         self.textBox.append("The shortest possible time is: " + str(timeTaken) + " minutes.")
         self.stdialogbox.close()
+        
+# The main method in which the APplication is run.        
 if __name__ == '__main__':     
     # Create the Qt Application
     app = QtWidgets.QApplication([])
