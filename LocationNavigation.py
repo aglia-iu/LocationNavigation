@@ -1,6 +1,7 @@
 import sys
 from LocationNode import LocationNode
 from Graph import Graph
+from queue import Queue
 # This is the class that is used to create functionality and add functionality to the 
 # Application class. It controls how the functionality of the application works.
 class LocationNavigation(object):
@@ -27,7 +28,7 @@ class LocationNavigation(object):
         LocationNavigation.locations.append(node)
         LocationNavigation.index+=1 # increment the index by one
         return node
-   
+    
     # This method is used to remove a location. Before removing the location we must remove this 
     # from each of it's neighbouring nodes' neighbour arrays. After removing each of the neighbouring 
     # arrays, we can remove the LocationNode. To remove this node, we can use either the node itself 
@@ -44,15 +45,17 @@ class LocationNavigation(object):
                 x.removeNeighb(node)
         
         LocationNavigation.locations.remove(node)
+        #LocationNavigation.graph.removeVertex(node)
     
     # This method uses Dijkstra's Algorithm to find the shortest path between 
-    # two nodes and returns an array of the locations to be used between the 
-    # two nodes to return the shortest possible path.
+    # multiple nodes and returns an array of the locations to be used between the 
+    # nodes to return the shortest possible path.
     # -----------------------------------------------------------------------
     # PARAMS: nodeList(array): The list of selected nodes.
     #         startNode(LocationNode): The node from which we  
     # RETURN: A list containing the shortest path of nodes to the end path
     def findShortestPath(self, nodeList, startNode):
+        # Set the distance and path arrays.
         self.distance = [0 for d in range(len(LocationNavigation.locations))]
         path = []
         # Set the startNode distance in the array to be 0 
@@ -106,7 +109,8 @@ class LocationNavigation(object):
 
             # We then update startnode to be the nextNode
             node = nextNode
-        
+            if ((nextNode not in nodeList) and (len(nodeList) == 1)):
+                return None
         return path
 
     # This is the shortest path time that can be calculated and the means of the 
@@ -122,9 +126,8 @@ class LocationNavigation(object):
         distance = 0 # The distance required to be travelled
         timeTaken = 0 # The total time taken
         # Calculating the distance.
-        self.findShortestPath(nodeList,startNode)
         for x in self.distance:
-            distance = distance + x
+            distance = distance + int(x)
         if(meansOfTransport == 0):
             # This calculates the time it would take by walk. The average walking speed is
             # 3 - 4 miles per hour.
@@ -139,3 +142,43 @@ class LocationNavigation(object):
             timeTaken = distance/25
         return timeTaken
     
+    # This function is used to find the shortest path between two locations
+    # using the BFS Shortest Path Algorithm. It then returns a queue containing
+    # the shortest path.
+    # ----------------------------------------------------------------------
+    # PARAMS: 
+    #       startNode : The beginning node from which we will iterate
+    #
+    # RETURN : The shortest path in a queue
+
+    def BFSfunction(self, startNode, endNode):
+        # To execute this algorithm, we will need a queue + a list
+        # for visiting nodes
+        # We can start by adding our current node to the queue.
+        queue = [[startNode]]
+        visited = []
+        path = []
+        # While the queue is not empty:
+        while(queue):
+            # If it is the node we are looking for: 
+            #if(node == endNode):
+            #    return queue
+            # pop the beginning of the queue
+            path = queue.pop(0)
+            node = path[-1]
+            if node not in visited:
+                # Get the neighbours of the node
+                neighbours = node.getNeighbours()
+                # Iterate through neighbours
+                for x in neighbours:
+                    if x != -1:
+                       # We add x to visited and queue
+                        newpath = list(path)
+                        newpath.append(x)
+                        queue.append(newpath)
+                        if (x == endNode):
+                            return newpath
+                #mark node as explored
+                visited.append(node)
+
+        # If we get to this point then we cannot use this
