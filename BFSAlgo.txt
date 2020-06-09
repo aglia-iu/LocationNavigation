@@ -3,33 +3,31 @@
 
 function __bfs__(self, startNode, endNode):
     // To execute this algorithm, we will need a queue + a list
-    // for visiting nodes
+    // for visiting nodes, and an array for the path
 
     queue = Queue()
     visited = list()
+    path = list()
 
-    // We can start by marking our current node as having been visited.
-    visited.append(startNode)
-    // Then add him to the queue
-    queue.append(startNode)
-
-    // While the queue is not empty:
-    while(queue != empty):
-        // pop the beginning of the queue
-        node = queue.pop()
-        
-        //If it is the last node we want
-        if(node == endNode):
-            return queue
-        
+    //Now we have to check and see if node has not been visited:
+    if node is not in visited:
         // Get the neighbours of the node
         neighbours = node.getNeighbours()
-        
+
         for(x in neighbours):
-            if x not in visited:
                 // We add x to visited and queue
                 visited.append(x)
-                queue.add(x)
-    
+                // We need to start a new path way
+                path2 = list()
+                path2.append(path)
+                path2.append(neighbours)
+                queue.add(path2)
+
+                //If it is the last node 
+            if(node == endNode):
+                return queue
+        // We can start by marking our current node as having been visited.
+        visited.append(startNode)
+
     //If we get here then there is no possible path for the nodes.
     return None
