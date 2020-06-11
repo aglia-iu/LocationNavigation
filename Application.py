@@ -4,28 +4,48 @@ from LocationNavigation import LocationNavigation
 from PySide2 import QtCore, QtWidgets, QtGui
 import sys
 
+# This is the class for the 2D GraphicsView image.
+class Main(QtWidgets.QGraphicsView):
+    # The Constructor Method.
+    def __init__(self, parent=None):
+        super(Main, self).__init__(parent)
+        self.scene = QtWidgets.QGraphicsScene(self)
+        self.setScene(self.scene)
+
+        self.image = QtGui.QImage("/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/map.jpg")
+        self.locpixmap = QtGui.QPixmap(self.image)
+        self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.locpixmap)
+        self.scene.addItem(self.pixmapItem)
+    # The overriden mousePress method.
+    def mousePressEvent(self, QMouseEvent):
+        self.mousepixmap = QtWidgets.QGraphicsPixmapItem('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon3.png')
+        self.pos = QMouseEvent.pos()
+        self.mousepixmap.setOffset(self.pos.x() - 48, self.pos.y() - 46)
+        self.scene.addItem(self.mousepixmap)
+
 # This is the main application for the Main Dialog of the Project.
 class Application(QtWidgets.QDialog): 
     def __init__(self, parent=None):
         super(Application, self).__init__(parent)
         # Setting up the Window
-        self.resize(1250, 925)
+        self.resize(1250, 1200)
         self.setWindowTitle("Location Navigation - An Interactive Python Project")
         #Setting up the window icon
         iconpixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/icon.png')
         self.setWindowIcon(QtGui.QIcon(iconpixmap))
         self.locationButtons = []
-        
+
         # insert the image
-        self.pixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/map.jpg')
-        self.label = QtWidgets.QLabel()
-        self.label.setPixmap(self.pixmap)
+        mousepixmap =  QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon3.png')
+        self.view = Main()
+        cursor = QtGui.QCursor(mousepixmap)
+        self.view.setCursor(cursor)
 
         layout2 = QtWidgets.QHBoxLayout() # main layout
         vboxlay = QtWidgets.QVBoxLayout() # Vertical Box layout
         horGroupBox = QtWidgets.QGroupBox() # A new group box for vboxlay
         # Add the image and the horlayout to a vertical layout
-        vboxlay.addWidget(self.label) 
+        vboxlay.addWidget(self.view) 
         vboxlay.addWidget(self.CentreBottom())
         # Then add vboxlay to a groupBox, and add that groupbox to layout2
         horGroupBox.setLayout(vboxlay)
@@ -42,6 +62,7 @@ class Application(QtWidgets.QDialog):
         # adding layouts to self
         self.setLayout(layout2)
     
+   
     # This sets the Centre - Bottom area of the Dialogue
     def CentreBottom(self):
         # Create the Widgets in the centre
@@ -227,8 +248,8 @@ class Application(QtWidgets.QDialog):
             for __ in range(0, len(LocationNavigation.locations)):
                 neighbarr.append(-1)
                 weightarr.append(-1)
-    
-        if (len(self.checklist)>0):
+        lenChecklist = len(self.checklist)
+        if ( lenChecklist > 0):
             for x in self.checklist:
                 if x.isChecked():
                     checkIndex = self.checklist.index(x) 
@@ -369,14 +390,7 @@ class Application(QtWidgets.QDialog):
         timeTaken = LocationNavigation.shortestPathTime(self, index, nodeArray,nodeArray[0])
         self.textBox.append("The shortest possible time is: " + str(timeTaken) + " minutes.")
         self.stdialogbox.close()
-    
-    # This is the method that we must use to set up the mouse cursor for when we 
-    # move onto the map.
-    #def mapLocation(self):
-    #    mousepixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon.png')
-    #    cursor = QtGui.QCursor(mousepixmap)
-    #    self.setOverrideCursor(cursor)
-    #    self.cursor.clicked.connect(self.restoreOverrideCursor())
+   
 if __name__ == '__main__':     
     # Create the Qt Application
     app = QtWidgets.QApplication([])
