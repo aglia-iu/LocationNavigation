@@ -16,12 +16,14 @@ class Main(QtWidgets.QGraphicsView):
         self.locpixmap = QtGui.QPixmap(self.image)
         self.pixmapItem = QtWidgets.QGraphicsPixmapItem(self.locpixmap)
         self.scene.addItem(self.pixmapItem)
+
     # The overriden mousePress method.
     def mousePressEvent(self, QMouseEvent):
         self.mousepixmap = QtWidgets.QGraphicsPixmapItem('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon3.png')
         self.pos = QMouseEvent.pos()
-        self.mousepixmap.setOffset(self.pos.x() - 48, self.pos.y() - 46)
+        self.mousepixmap.setOffset(self.pos.x() - 48, self.pos.y() - 47)
         self.scene.addItem(self.mousepixmap)
+        Application.AddDialogueBox(applic)
 
 # This is the main application for the Main Dialog of the Project.
 class Application(QtWidgets.QDialog): 
@@ -37,15 +39,15 @@ class Application(QtWidgets.QDialog):
 
         # insert the image
         mousepixmap =  QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon3.png')
-        self.view = Main()
+        view = Main()
         cursor = QtGui.QCursor(mousepixmap)
-        self.view.setCursor(cursor)
+        view.setCursor(cursor)
 
         layout2 = QtWidgets.QHBoxLayout() # main layout
         vboxlay = QtWidgets.QVBoxLayout() # Vertical Box layout
         horGroupBox = QtWidgets.QGroupBox() # A new group box for vboxlay
         # Add the image and the horlayout to a vertical layout
-        vboxlay.addWidget(self.view) 
+        vboxlay.addWidget(view) 
         vboxlay.addWidget(self.CentreBottom())
         # Then add vboxlay to a groupBox, and add that groupbox to layout2
         horGroupBox.setLayout(vboxlay)
@@ -62,7 +64,6 @@ class Application(QtWidgets.QDialog):
         # adding layouts to self
         self.setLayout(layout2)
     
-   
     # This sets the Centre - Bottom area of the Dialogue
     def CentreBottom(self):
         # Create the Widgets in the centre
@@ -112,7 +113,7 @@ class Application(QtWidgets.QDialog):
         layout1.setLayout(self.innerlay)
         
         return layout1
-    
+
     # This is the dialogue box that I want to be able to use to add a new Location and to 
     # add a Location to the Location bar.
     def AddDialogueBox(self):
@@ -124,34 +125,34 @@ class Application(QtWidgets.QDialog):
         self.namelabel = QtWidgets.QLabel("Name") # Name Label
         self.neighbourLabel = QtWidgets.QLabel("Neighbour") # Neighbour Label
         self.weightLabel = QtWidgets.QLabel("Distance from Neighbour") # Weight Label
-        self.name = QtWidgets.QLineEdit() # Used to enter in the location name
+        name = QtWidgets.QLineEdit() # Used to enter in the location name
         vboxlay = QtWidgets.QVBoxLayout() # The VBox within the layout VBox
         
         hbox = QtWidgets.QHBoxLayout()
         groupbox = QtWidgets.QGroupBox() # main groupBox
         self.buttonOkBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok) # The button box containing OK button
-        self.checklist = list()
-        self.weight = QtWidgets.QLineEdit() # Used to get the Weight
+        checklist = list()
+        weight = QtWidgets.QLineEdit() # Used to get the Weight
         checkIndex = 0
         vboxlay.addWidget(self.namelabel)
-        vboxlay.addWidget(self.name)
+        vboxlay.addWidget(name)
         vboxlay.addWidget(self.neighbourLabel)
         # For-Loop to create neighbouring buttons
         for x in LocationNavigation.locations:
             checkIndex = LocationNavigation.locations.index(x)
             neighbName = str(LocationNavigation.locations[checkIndex].getName())
             self.radiobut = QtWidgets.QRadioButton(neighbName)
-            self.checklist.append(self.radiobut)
+            checklist.append(self.radiobut)
             vboxlay.addWidget(self.radiobut)
 
         if (len(LocationNavigation.locations) > 0):
             vboxlay.addWidget(self.weightLabel)
-            vboxlay.addWidget(self.weight)
+            vboxlay.addWidget(weight)
 
         # Add the Widgets to vboxlay, then to groupbox   
         
         vboxlay.addWidget(self.buttonOkBox)
-        self.buttonOkBox.button(QtWidgets.QDialogButtonBox.Ok).clicked.connect(self.accept)
+        self.buttonOkBox.button(QtWidgets.QDialogButtonBox.Ok).clicked.connect(lambda: self.accept(checklist, weight, name))
         groupbox.setLayout(vboxlay)
         hbox.addWidget(groupbox)
         # Then set the layout to the groupbox
@@ -240,7 +241,7 @@ class Application(QtWidgets.QDialog):
     # This is the def that is used when the 'Ok' Button is clicked.
     # -------------------------------------------------------------
     # NO PARAMS, NO RETURN
-    def accept(self):
+    def accept(self, checklist, weight, name):
         checkIndex = 0
         neighbarr = list()
         weightarr = list()
@@ -248,19 +249,19 @@ class Application(QtWidgets.QDialog):
             for __ in range(0, len(LocationNavigation.locations)):
                 neighbarr.append(-1)
                 weightarr.append(-1)
-        lenChecklist = len(self.checklist)
+        lenChecklist = len(checklist)
         if ( lenChecklist > 0):
-            for x in self.checklist:
+            for x in checklist:
                 if x.isChecked():
-                    checkIndex = self.checklist.index(x) 
+                    checkIndex = checklist.index(x) 
                     if(len(LocationNavigation.locations) == 0):
                         neighbarr.append(LocationNavigation.locations[checkIndex])
-                        weightarr.append(self.weight.text())  
+                        weightarr.append(weight.text())  
                     else:
                         neighbarr[checkIndex] = (LocationNavigation.locations[checkIndex])
-                        weightarr[checkIndex] = (self.weight.text())  
+                        weightarr[checkIndex] = (weight.text())  
                
-        node1 = LocationNavigation.addLocation(self,self.name.text(), neighbarr, weightarr)
+        node1 = LocationNavigation.addLocation(self,name.text(), neighbarr, weightarr)
         self.location = QtWidgets.QCheckBox(node1.getName())
         self.locationButtons.append(self.location)
         self.vlay.addWidget(self.location, QtWidgets.QDialogButtonBox.ActionRole) # Adding location to ButtonBox
@@ -390,6 +391,13 @@ class Application(QtWidgets.QDialog):
         timeTaken = LocationNavigation.shortestPathTime(self, index, nodeArray,nodeArray[0])
         self.textBox.append("The shortest possible time is: " + str(timeTaken) + " minutes.")
         self.stdialogbox.close()
+    
+    #def paintEvent(self, paintEvent):
+    #    painter = QtGui.QPainter(self)
+    #    painter.begin(self)
+    #    painter.drawPixmap(self.rect(), self.mousepixmap)
+    #    painter.restore
+    #    painter.end()
    
 if __name__ == '__main__':     
     # Create the Qt Application
