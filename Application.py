@@ -1,3 +1,14 @@
+#NAME: Anjali Gali
+#PROJECT: Location Navigation - An Interactive Python Project
+#MAIN FILE: Application.py
+#ASSOCIATED FILE(S): LocationNode.py, ApplicTests.py, LocationNavigation.py
+#                   BFSAlgo.txt, Dijkstra.txt,ShortestTime_Algo.txt, icon.png, 
+#                   map.jpg, mapicon3.png  
+#OVERVIEW: A program used to help track the locations, the shortest paths and 
+#          shortest time taken between locations across teh UW-Madison campus. Made for the 
+#          convenience of incoming new students and delivery purposes.
+#COPYRIGHT: Copyright (c) Anjali Gali. May - June 2020. All Rights Reserved. 
+#
 # Main File: Application.py
 # This is the main file for the program.
 from LocationNavigation import LocationNavigation
@@ -7,6 +18,8 @@ import sys
 # This is the class for the 2D GraphicsView image.
 class Main(QtWidgets.QGraphicsView):
     # The Constructor Method.
+    # -------------------------------------------------------------
+    # NO PARAMS, NO RETURN
     def __init__(self, parent=None):
         super(Main, self).__init__(parent)
         self.scene = QtWidgets.QGraphicsScene(self)
@@ -18,6 +31,9 @@ class Main(QtWidgets.QGraphicsView):
         self.scene.addItem(self.pixmapItem)
 
     # The overriden mousePress method.
+    # -------------------------------------------------------------
+    # PARAMS: QMouseEvent - Indicates the oncoming QMouseEvent 
+    # NO RETURN
     def mousePressEvent(self, QMouseEvent):
         self.mousepixmap = QtWidgets.QGraphicsPixmapItem('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon3.png')
         self.pos = QMouseEvent.pos()
@@ -27,6 +43,9 @@ class Main(QtWidgets.QGraphicsView):
 
 # This is the main application for the Main Dialog of the Project.
 class Application(QtWidgets.QDialog): 
+    # The Constructor Method.
+    # -------------------------------------------------------------
+    # NO PARAMS, NO RETURN
     def __init__(self, parent=None):
         super(Application, self).__init__(parent)
         # Setting up the Window
@@ -36,6 +55,11 @@ class Application(QtWidgets.QDialog):
         iconpixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/icon.png')
         self.setWindowIcon(QtGui.QIcon(iconpixmap))
         self.locationButtons = []
+
+        #insert the label
+        labelpixmap = QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/label.png')
+        label = QtWidgets.QLabel()
+        label.setPixmap(labelpixmap)
 
         # insert the image
         mousepixmap =  QtGui.QPixmap('/Users/anjal/Desktop/Personal Projects/PythonProj/DijkstrasProj/mapicon3.png')
@@ -52,8 +76,15 @@ class Application(QtWidgets.QDialog):
         # Then add vboxlay to a groupBox, and add that groupbox to layout2
         horGroupBox.setLayout(vboxlay)
         # Adding the layouts to the groups
+        
         layout2.addWidget(self.LeftWidgets())
         layout2.addWidget(horGroupBox)
+
+        vertGroupBox = QtWidgets.QGroupBox()
+        vertGroupBox.setLayout(layout2)
+        vertlay = QtWidgets.QVBoxLayout() # Vertical Box layout
+        vertlay.addWidget(label)
+        vertlay.addWidget(vertGroupBox)
 
         # Adding functionality to the buttons
         self.button1.clicked.connect(self.shortestTimeDialogue)
@@ -62,9 +93,11 @@ class Application(QtWidgets.QDialog):
         self.addbutton.clicked.connect(self.AddDialogueBox)
         self.rembutton.clicked.connect(self.RemoveDialogueBox)
         # adding layouts to self
-        self.setLayout(layout2)
+        self.setLayout(vertlay)
     
     # This sets the Centre - Bottom area of the Dialogue
+    # -------------------------------------------------------------
+    # NO PARAMS, NO RETURN
     def CentreBottom(self):
         # Create the Widgets in the centre
         centrelay = QtWidgets.QHBoxLayout() # This is the HBox into which all the things will go
@@ -85,6 +118,9 @@ class Application(QtWidgets.QDialog):
         # Functionality of addbutton
         return horLayout
     
+    # The sets the left area of the dialogue box/widgets
+    # -------------------------------------------------------------
+    # NO PARAMS, NO RETURN
     def LeftWidgets(self):
         # Create the widgets on the left
         self.button1 = QtWidgets.QPushButton("Find Shortest Time") 
@@ -116,6 +152,8 @@ class Application(QtWidgets.QDialog):
 
     # This is the dialogue box that I want to be able to use to add a new Location and to 
     # add a Location to the Location bar.
+    # -------------------------------------------------------------
+    # NO PARAMS, NO RETURN
     def AddDialogueBox(self):
         self.dialogbox = QtWidgets.QDialog()
         self.dialogbox.setModal(True)
@@ -160,6 +198,8 @@ class Application(QtWidgets.QDialog):
         self.dialogbox.exec_()
     
     # This is the dialogue box used to remove values from the Program
+    # -------------------------------------------------------------
+    # NO PARAMS, NO RETURN
     def RemoveDialogueBox(self):
         self.remdialogbox = QtWidgets.QDialog()
         self.remdialogbox.setModal(True)
@@ -183,8 +223,9 @@ class Application(QtWidgets.QDialog):
         self.remdialogbox.setLayout(self.vboxlay)
         self.remdialogbox.exec()
     
-    
     # This is the dialogue box for the shortest time dialogue box
+    # -------------------------------------------------------------
+    # NO PARAMS, NO RETURN
     def shortestTimeDialogue(self):
         self.stdialogbox = QtWidgets.QDialog() # The dialogbox for the shortest time.
         self.stdialogbox.setModal(True)
@@ -215,6 +256,8 @@ class Application(QtWidgets.QDialog):
         self.stdialogbox.exec()
     
     # Shortest path dialogue:
+    # -------------------------------------------------------------
+    # NO PARAMS, NO RETURN
     def shortestPathDialog(self):
         self.spdialogbox = QtWidgets.QDialog()
         self.spdialogbox.setModal(True)
@@ -391,14 +434,7 @@ class Application(QtWidgets.QDialog):
         timeTaken = LocationNavigation.shortestPathTime(self, index, nodeArray,nodeArray[0])
         self.textBox.append("The shortest possible time is: " + str(timeTaken) + " minutes.")
         self.stdialogbox.close()
-    
-    #def paintEvent(self, paintEvent):
-    #    painter = QtGui.QPainter(self)
-    #    painter.begin(self)
-    #    painter.drawPixmap(self.rect(), self.mousepixmap)
-    #    painter.restore
-    #    painter.end()
-   
+
 if __name__ == '__main__':     
     # Create the Qt Application
     app = QtWidgets.QApplication([])
