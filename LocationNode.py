@@ -1,3 +1,14 @@
+#NAME: Anjali Gali
+#PROJECT: Location Navigation - An Interactive Python Project
+#MAIN FILE: Application.py
+#ASSOCIATED FILE(S): LocationNode.py, ApplicTests.py, LocationNavigation.py
+#                   BFSAlgo.txt, Dijkstra.txt,ShortestTime_Algo.txt, icon.png, 
+#                   map.jpg, mapicon3.png  
+#OVERVIEW: A program used to help track the locations, the shortest paths and 
+# shortest time taken between locations across teh UW-Madison campus. Made for the 
+# convenience of incoming new students and delivery purposes.
+#COPYRIGHT: Copyright (c) Anjali Gali. May - June 2020. All Rights Reserved. 
+#
 #This is the class to note every location in the map. It will keep track of the name, the index
 #and the neighbours of this location.
 class LocationNode(object):
