@@ -1,14 +1,23 @@
+#NAME: Anjali Gali
+#PROJECT: Location Navigation - An Interactive Python Project
+#MAIN FILE: Application.py
+#ASSOCIATED FILE(S): LocationNode.py, ApplicTests.py, LocationNavigation.py
+#                   BFSAlgo.txt, Dijkstra.txt,ShortestTime_Algo.txt, icon.png, 
+#                   map.jpg, mapicon3.png  
+#OVERVIEW: A program used to help track the locations, the shortest paths and 
+# shortest time taken between locations across teh UW-Madison campus. Made for the 
+# convenience of incoming new students and delivery purposes.
+#COPYRIGHT: Copyright (c) Anjali Gali. May - June 2020. All Rights Reserved. 
+#
 import sys
 from LocationNode import LocationNode
-from Graph import Graph
 from queue import Queue
 # This is the class that is used to create functionality and add functionality to the 
 # Application class. It controls how the functionality of the application works.
 class LocationNavigation(object):
     # GLOBAL VARIABLES
     index = 0
-    locations = []
-    graph = Graph()
+    locations = [] # The locations list acts as a graph in it's construction.
     # This method is used to create and add a location to the function. It 
     # creates a new location using the name, neighbours and weights that are obtained
     # from a dialogue box created when the user clicks 'Add Location'. Adds newly created 
@@ -45,7 +54,6 @@ class LocationNavigation(object):
                 x.removeNeighb(node)
         
         LocationNavigation.locations.remove(node)
-        #LocationNavigation.graph.removeVertex(node)
     
     # This method uses Dijkstra's Algorithm to find the shortest path between 
     # multiple nodes and returns an array of the locations to be used between the 
@@ -181,4 +189,4 @@ class LocationNavigation(object):
                 #mark node as explored
                 visited.append(node)
 
-        # If we get to this point then we cannot use this
+        # If we get to this point then we cannot use this.
